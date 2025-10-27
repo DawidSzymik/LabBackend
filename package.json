@@ -1,0 +1,32 @@
+{
+  "name": "prog-back-end",
+  "version": "1.0.0",
+  "description": "Programowanie back-end",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js",
+    "start-server": "node app.js"
+  },
+  "author": "Grzegorz Filo",
+  "license": "AFL-3.0",
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "connect-flash": "^0.1.1",
+    "connect-mongodb-session": "^5.0.0",
+    "cookie-parser": "^1.4.6",
+    "ejs": "^3.1.8",
+    "express": "^5.1.0",
+    "express-session": "^1.17.3",
+    "express-validator": "^7.2.0",
+    "mongodb": "^6.10.0",
+    "mongoose": "^8.7.3",
+    "multer": "^2.0.2",
+    "pdfkit": "^0.17.1",
+    "sequelize": "^6.24.0",
+    "tiny-csrf": "^1.1.3"
+  }
+}

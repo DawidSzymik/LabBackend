@@ -1,0 +1,22 @@
+<%- include('../includes/head.ejs') %>
+    <link rel="stylesheet" href="/css/product.css">
+</head>
+
+<body>
+    <%- include('../includes/navigation.ejs') %>
+
+    <main>
+        <h2 class="grid">Witamy w naszej aplikacji "giełda internetowa"</h2>
+        <p class="grid">
+            <img class="image" src="img/pk.png" alt="PK">
+            <img class="image" src="img/wm.png" alt="WM PK">
+            <img class="image" src="img/m7.png" alt="M7 WM PK">
+        </p>
+        <p class="centered">
+            Informatyka stosowana, stopień <%= studyLevel %>, laboratorium z przedmiotu 
+            "<%= classesName %>".<br>
+            Budowa serwera node.js
+        </p>
+
+    </main>
+<%- include('../includes/end.ejs') %>
