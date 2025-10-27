@@ -3,6 +3,13 @@ const { validationResult } = require("express-validator");
 const fileHelper = require("../util/file");
 const Product = require("../models/product");
 
+exports.checkIsLogged = (req, res, next) => {
+  if (!req.session.isAuthenticated) {
+    return res.redirect("/login");
+  }
+  next();
+};
+
 exports.getAddProduct = (req, res, next) => {
   res.render("admin/edit-product", {
     pageTitle: "Add Product",
@@ -48,7 +55,7 @@ exports.postAddProduct = async (req, res, next) => {
     price: price,
     description: description,
     imageUrl: imageUrl,
-    userId: req.session.user,
+    userId: req.session.user._id,
   });
   try{
     await product.save();

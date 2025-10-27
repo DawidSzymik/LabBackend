@@ -7,12 +7,12 @@ const User = require("../models/user");
 
 const router = express.Router();
 
-router.get("/signup", errorController.getNotReadyYet );
-router.post('/signup', errorController.getNotReadyYet );
+router.get("/signup", authController.getSignup);
+router.post('/signup', authController.postSignup);
 
-router.get("/login", errorController.getNotReadyYet );
-router.post("/login", errorController.getNotReadyYet );
-router.post("/logout", errorController.getNotReadyYet );
+router.get("/login", authController.getLogin);
+router.post("/login", authController.postLogin);
+router.post("/logout", authController.postLogout);
 
 router.get("/reset", authController.getReset);
 router.post("/reset", authController.postReset);

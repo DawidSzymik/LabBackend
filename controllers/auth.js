@@ -9,11 +9,120 @@
 //   })
 // );
 
-
+const crypto = require("crypto");
+const bcrypt = require("bcryptjs");
+const { validationResult } = require("express-validator");
 
 const User = require("../models/user");
 
+exports.getSignup = (req, res, next) => {
+  let message = req.flash("error");
+  if (message.length > 0) { message = message[0]; } else { message = null; }
+  res.render("auth/signup", {
+    path: "/signup",
+    pageTitle: "Signup",
+    errorMessage: message,
+    oldInput: { email: "", password: "", confirmPassword: "" },
+    validationErrors: [],
+  });
+};
 
+exports.postSignup = async (req, res, next) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).render("auth/signup", {
+      path: "/signup",
+      pageTitle: "Signup",
+      errorMessage: errors.array()[0].msg,
+      oldInput: {
+        email: email, password: password,
+        confirmPassword: req.body.confirmPassword,
+      },
+      validationErrors: errors.array(),
+    });
+  }
+  try{
+    const hashPwd = await bcrypt.hash(password, 12);
+    const user = new User({email: email, password: hashPwd, cart:{ items: [] }});
+    await user.save();
+    return res.redirect("/login");
+  }catch(err){
+    const error = new Error(err);
+    error.httpStatusCode = 500;
+    return next(error);
+  };
+};
+
+exports.getLogin = (req, res, next) => {
+  let message = req.flash("error");
+  if (message.length > 0) { message = message[0]; } else { message = null; }
+  res.render("auth/login", {
+    path: "/login",
+    pageTitle: "Login",
+    errorMessage: message,
+    oldInput: { email: "", password: "", },
+    validationErrors: [],
+  });
+};
+
+exports.postLogin = async (req, res, next) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).render("auth/login", {
+      path: "/login",
+      pageTitle: "Login",
+      errorMessage: errors.array()[0].msg,
+      oldInput: {email: email, password: password, },
+      validationErrors: errors.array(),
+    });
+  }
+  try{
+    const user = await User.findOne({ email: email });
+    if (!user) {
+      return res.status(422).render("auth/login", {
+        path: "/login",
+        pageTitle: "Login",
+        errorMessage: "Invalid email or password.",
+        oldInput: {email: email, password: password, },
+        validationErrors: [],
+      });
+    }
+    try{
+      const doMatch = await bcrypt.compare(password, user.password);
+      if (doMatch) {
+        req.session.isAuthenticated = true;
+        req.session.user = user;
+        await req.session.save();
+        res.redirect("/");
+      } else {
+        return res.status(422).render("auth/login", {
+          path: "/login",
+          pageTitle: "Login",
+          errorMessage: "Invalid email or password.",
+          oldInput: {email: email, password: password, },
+          validationErrors: [],
+        });
+      }
+    }catch(err){
+      res.redirect("/login");
+    }
+  }catch(err){
+    const error = new Error(err);
+    error.httpStatusCode = 500;
+    return next(error);
+  }
+};
+
+exports.postLogout = async (req, res, next) => {
+  const err = await req.session.destroy();
+  if(err){
+    res.redirect("/");
+  };
+};
 exports.getReset = (req, res, next) => {
   let message = req.flash("error");
   if (message.length > 0) {

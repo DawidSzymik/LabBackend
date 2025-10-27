@@ -12,16 +12,15 @@ router.get('/products', shopController.getProducts);
 
 router.get('/products/:productId', shopController.getProduct);
 
-router.get('/cart', errorController.getNotReadyYet );
+router.get('/cart', adminController.checkIsLogged, errorController.getNotReadyYet);
 
-router.post('/cart', errorController.getNotReadyYet );
+router.post('/cart', adminController.checkIsLogged, errorController.getNotReadyYet);
 
-router.post('/cart-delete-item', errorController.getNotReadyYet );
+router.post('/cart-delete-item', adminController.checkIsLogged, errorController.getNotReadyYet);
 
-router.post('/create-order', errorController.getNotReadyYet );
+router.post('/create-order', adminController.checkIsLogged, errorController.getNotReadyYet);
 
-router.get('/orders', errorController.getNotReadyYet );
+router.get('/orders', adminController.checkIsLogged, errorController.getNotReadyYet);
 
-router.get('/orders/:orderId', errorController.getNotReadyYet );
-
+router.get('/orders/:orderId', adminController.checkIsLogged, errorController.getNotReadyYet);
 module.exports = router;

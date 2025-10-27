@@ -9,13 +9,11 @@ const flash = require("connect-flash");
 const multer = require("multer");
 
 const errorController = require("./controllers/error");
-const adminController = require("./controllers/admin");
-const authController = require("./controllers/auth");
+const User = require("./models/user");
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
 const files = require("./util/file");
-
 
 const MONGODB_URI = "mongodb://127.0.0.1:27017/pb_2001_14K1_filo";
 mongoose.set("strictQuery", false);
@@ -29,7 +27,9 @@ const app = express();
 app.set("view engine", "ejs");
 app.set("views", "views");
 
+
 app.use(express.urlencoded({ extended: false }));
+
 app.use("/images", express.static(path.join(__dirname, "images")));
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -48,16 +48,33 @@ app.use(
   })
 );
 
-app.use(csrf("1234567ThisIsSecret9876543210PAI",
-  ["POST","DELETE","PUT","PATCH"], ["/logout",/\/product(\/.*)?/i])); 
+app.use(
+  csrf(
+    "1234567ThisIsSecret9876543210PAI",
+    ["POST", "DELETE", "PUT", "PATCH"],
+    ["/logout"] 
+  )
+);
 
-app.use((req, res, next) => {
-  res.locals.isAuthenticated = false;
-  res.locals.cToken = req.csrfToken();
-  res.locals.path = "/";
-  next(); 
+app.use(async (req, res, next) => {
+  if (!req.session.user) {
+    return next();
+  }
+  try {
+    const user = await User.findById(req.session.user._id);
+    req.user = user;
+    next();
+  } catch (err) {
+    next(new Error(err));
+  }
 });
 
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isAuthenticated || false;
+  res.locals.cToken = req.csrfToken();
+  res.locals.path = "/";
+  next();
+});
 
 app.use(flash());
 
@@ -70,13 +87,11 @@ app.use(errorController.get500);
 
 (async () => {
   try {
-    await mongoose.connect(MONGODB_URI, { });
+    await mongoose.connect(MONGODB_URI, {});
     app.listen(33333, () => {
       console.log('Server is running on port 33333');
     });
-  }catch (err) {
+  } catch (err) {
     console.error(err);
   }
 })();
-
-
