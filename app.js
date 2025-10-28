@@ -15,7 +15,7 @@ const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
 const files = require("./util/file");
 
-const MONGODB_URI = "mongodb://127.0.0.1:27017/pb_2001_14K1_filo";
+const MONGODB_URI = "mongodb://127.0.0.1:27017/pb_2025_14K2_Szymik";
 mongoose.set("strictQuery", false);
 const store = new mongoDBStore({
   uri: MONGODB_URI,
